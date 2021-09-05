@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  mysql:
+    image: yobasystems/alpine-mariadb:10.4.17-arm32v7
+    restart: always
+    hostname: mysql
+    env_file:
+      - .env
+    networks:
+      - mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql:/var/lib/mysql/data
+  api:
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    networks:
+      - mysql
+    depends_on:
+      - mysql
+    deploy:
+      restart_policy:
+        condition: on-failure
+volumes:
+  mysql:
+networks:
+  mysql:
+    driver: bridge
