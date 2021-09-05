@@ -28,10 +28,14 @@ type SoldItens struct {
 	Product    Product   `json:"product"`
 	Quantity   float64   `json:"quantity"`
 	TotalValue big.Float `json:"total_value"`
+	UpdatedAt            time.Time      `json:"updated_at"`
+	CreatedAt            time.Time      `json:"created_at"`
 }
 
 type Installments struct {
 	Number int       `json:"number"`
 	Value  big.Float `json:"value"`
 	Date   time.Time `json:"date"`
+	UpdatedAt            time.Time      `json:"updated_at"`
+	CreatedAt            time.Time      `json:"created_at"`
 }

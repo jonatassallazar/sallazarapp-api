@@ -1,8 +1,9 @@
 package main
 
 import (
+	"api/src/api/routers"
+	"api/src/api/services/db"
 	"api/src/configs"
-	"api/src/db"
 	"flag"
 	"log"
 	"net/http"
@@ -61,6 +62,8 @@ func main() {
 			"message": "pong",
 		})
 	})
+
+	routers.InitRoutes(r)
 
 	log.Fatal(r.Run())
 }
