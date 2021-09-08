@@ -40,8 +40,8 @@ func (u Users) GetUserByID(ID uint64) (models.User, error) {
 	var user models.User
 
 	if err := u.db.QueryRow(
-		"SELECT id, name, email, password, updated_at, created_at FROM users WHERE id = ?", ID).Scan(
-		&user.ID, &user.Name, &user.Email, &user.Password, &user.UpdatedAt, &user.CreatedAt,
+		"SELECT id, name, email, updated_at, created_at FROM users WHERE id = ?", ID).Scan(
+		&user.ID, &user.Name, &user.Email, &user.UpdatedAt, &user.CreatedAt,
 	); err != nil {
 		return models.User{}, err
 	}

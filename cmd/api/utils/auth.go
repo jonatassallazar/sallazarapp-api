@@ -61,7 +61,7 @@ func returnVerificationKey(token *jwt.Token) (interface{}, error) {
 		return nil, fmt.Errorf("método de assinatura inesperado! %v", token.Header["alg"])
 	}
 
-	return configs.SecretJWT, nil
+	return []byte(configs.SecretJWT), nil
 }
 
 // ExtractUserIdAndAccessLevel retorna o ID e nível de acesso do usuário que está salvo no token
