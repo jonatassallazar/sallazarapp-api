@@ -15,6 +15,7 @@ func NewUsersRepo(db *sql.DB) *Users {
 	return &Users{db}
 }
 
+// CreateUser cria um usuário no banco e retorna um token de autorização
 func (u Users) CreateUser(user models.User) (uint64, error) {
 	stmt, err := u.db.Prepare(
 		"INSERT INTO users (name, email, password, accesslevel) values (?, ?, ?, ?)")
@@ -36,6 +37,7 @@ func (u Users) CreateUser(user models.User) (uint64, error) {
 	return uint64(ID), nil
 }
 
+// GetUserByID busca no banco um usuário pelo seu ID
 func (u Users) GetUserByID(ID uint64) (models.User, error) {
 	var user models.User
 
@@ -49,6 +51,9 @@ func (u Users) GetUserByID(ID uint64) (models.User, error) {
 	return user, nil
 }
 
+// GetUserByEmail busca no banco um usuário pelo e-mail
+//
+// Uso restrito interno da API para autenticar o login de um usuário
 func (u Users) GetUserByEmail(email string) (models.User, error) {
 	var user models.User
 
@@ -60,4 +65,36 @@ func (u Users) GetUserByEmail(email string) (models.User, error) {
 	}
 
 	return user, nil
+}
+
+// UpdateUserByID atualiza um usuário no banco pelo ID fornecido
+func (u Users) UpdateUserByID(ID uint64, user models.User) error {
+	stmt, err := u.db.Prepare("UPDATE users SET nome = ?, email = ? where id = ?")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(user.Name, user.Email, ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DeleteUserByID deleta um usuário no banco pelo ID informado
+func (u Users) DeleteUserByID(id uint64) error {
+	stmt, err := u.db.Prepare("DELETE * FROM users WHERE id = ?")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

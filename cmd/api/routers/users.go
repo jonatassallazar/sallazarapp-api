@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// UsersRoutes agrupamento de rotas de endpoints relazionados aos usuários
 func UsersRoutes(g *gin.RouterGroup, gc *controllers.GeneralController) {
 	usersRoutes := g.Group("/users")
 	{

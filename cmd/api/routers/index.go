@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// InitRoutes organiza a estrutura das rotas e o uso de Middlewares
 func InitRoutes(r *gin.Engine, gc *controllers.GeneralController) {
 
 	baseApi := r.Group("/v1")
