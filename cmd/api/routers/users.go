@@ -2,6 +2,7 @@ package routers
 
 import (
 	"api/cmd/api/controllers"
+	"api/cmd/api/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,8 +10,7 @@ import (
 func UsersRoutes(g *gin.RouterGroup, gc *controllers.GeneralController) {
 	usersRoutes := g.Group("/users")
 	{
-		// usersRoutes.GET("/login", gc.UserLogin)
-		usersRoutes.POST("/signup", gc.UserSignup)
+		usersRoutes.Use(middlewares.AuthorizeJWT)
 		usersRoutes.GET("/:id", gc.GetUser)
 	}
 }

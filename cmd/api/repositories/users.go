@@ -48,3 +48,16 @@ func (u Users) GetUserByID(ID uint64) (models.User, error) {
 
 	return user, nil
 }
+
+func (u Users) GetUserByEmail(email string) (models.User, error) {
+	var user models.User
+
+	if err := u.db.QueryRow(
+		"SELECT id, email, password, accesslevel FROM users WHERE email = ?", email).Scan(
+		&user.ID, &user.Email, &user.Password, &user.AccessLevel,
+	); err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}
