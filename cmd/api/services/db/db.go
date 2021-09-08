@@ -1,7 +1,7 @@
 package db
 
 import (
-	"api/src/configs"
+	"api/cmd/api/configs"
 	"context"
 	"database/sql"
 	"time"

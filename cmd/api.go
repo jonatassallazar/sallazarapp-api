@@ -1,12 +1,12 @@
 package main
 
 import (
-	"api/src/api/routers"
-	"api/src/api/services/db"
-	"api/src/configs"
+	"api/cmd/api/configs"
+	"api/cmd/api/controllers"
+	"api/cmd/api/routers"
+	"api/cmd/api/services/db"
 	"flag"
 	"log"
-	"net/http"
 	"os"
 	"strconv"
 	"time"
@@ -15,13 +15,14 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
-const version = "1.0.0"
-
 func main() {
 	var cfg configs.Config
 	var err error
+	r := gin.Default()
+	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
 	cfg.DB = *mysql.NewConfig()
+	cfg.DB.ParseTime = true
 
 	port, err := strconv.Atoi(os.Getenv("PORT"))
 	if err != nil {
@@ -37,15 +38,6 @@ func main() {
 	flag.StringVar(&cfg.DB.Passwd, "db-password", os.Getenv("MYSQL_PASSWORD"), "MySql password secret")
 	flag.Parse()
 
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
-
-	/* app := &configs.Application{
-		Config: cfg,
-		Logger: logger,
-	 }*/
-
-	r := gin.Default()
-
 	db, err := db.OpenDB(&cfg)
 	if err != nil {
 		logger.Fatal(err)
@@ -57,13 +49,13 @@ func main() {
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(10)
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
+	gc := &controllers.GeneralController{
+		Database: db,
+		Config:   cfg,
+		Logger:   logger,
+	}
 
-	routers.InitRoutes(r)
+	routers.InitRoutes(r, gc)
 
 	log.Fatal(r.Run())
 }

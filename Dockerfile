@@ -7,10 +7,10 @@ COPY go.sum ./
 
 RUN go mod download
 
-COPY src ./src
+COPY cmd ./cmd
 
-RUN go build ./src/cmd/
+RUN go build -o api ./cmd/
 
 EXPOSE 5000 5000
 
-CMD [ "./cmd" ]
+CMD [ "./api" ]
