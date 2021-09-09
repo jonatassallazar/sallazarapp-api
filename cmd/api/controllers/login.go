@@ -4,7 +4,6 @@ import (
 	"api/cmd/api/core/models"
 	"api/cmd/api/repositories"
 	"api/cmd/api/utils"
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +14,7 @@ func (gc *GeneralController) UserSignup(c *gin.Context) {
 	var user models.User
 
 	if c.Request.Body == nil {
-		c.AbortWithError(http.StatusBadRequest, errors.New(""))
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "corpo inválido"})
 		return
 	}
 
@@ -23,7 +22,7 @@ func (gc *GeneralController) UserSignup(c *gin.Context) {
 
 	hp, err := utils.SecurePassword(user.Password)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 	user.Password = hp
@@ -32,13 +31,14 @@ func (gc *GeneralController) UserSignup(c *gin.Context) {
 
 	ID, err := repo.CreateUser(user)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
 	token, err := utils.CreateToken(ID, "admin")
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
+		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
@@ -51,7 +51,7 @@ func (gc *GeneralController) UserLogin(c *gin.Context) {
 	var user models.User
 
 	if c.Request.Body == nil {
-		c.AbortWithError(http.StatusBadRequest, errors.New(""))
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "corpo inválido"})
 		return
 	}
 
@@ -60,7 +60,7 @@ func (gc *GeneralController) UserLogin(c *gin.Context) {
 	repo := repositories.NewUsersRepo(gc.Database)
 	userDB, err := repo.GetUserByEmail(user.Email)
 	if err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
@@ -71,7 +71,7 @@ func (gc *GeneralController) UserLogin(c *gin.Context) {
 
 	token, err := utils.CreateToken(userDB.ID, userDB.AccessLevel)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 

@@ -4,7 +4,6 @@ import (
 	"api/cmd/api/core/models"
 	"api/cmd/api/repositories"
 	"api/cmd/api/utils"
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -17,25 +16,25 @@ import (
 func (gc *GeneralController) GetUser(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
 	idToken, _, err := utils.ExtractUserIdAndAccessLevel(c)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
 	if idToken != id {
-		c.AbortWithError(http.StatusUnauthorized, errors.New("o usuário pode buscar somente suas próprias informações"))
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "o usuário pode buscar somente suas próprias informações"})
 		return
 	}
 
 	repo := repositories.NewUsersRepo(gc.Database)
 	user, err := repo.GetUserByID(id)
 	if err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err})
 		return
 	}
 
@@ -50,25 +49,26 @@ func (gc *GeneralController) GetUser(c *gin.Context) {
 func (gc *GeneralController) UpdateUser(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
+
 		return
 	}
 
 	idToken, _, err := utils.ExtractUserIdAndAccessLevel(c)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
 	if idToken != id {
-		c.AbortWithError(http.StatusUnauthorized, errors.New("o usuário pode buscar somente suas próprias informações"))
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "o usuário pode buscar somente suas próprias informações"})
 		return
 	}
 
 	var user models.User
 
 	if c.Request.Body == nil {
-		c.AbortWithError(http.StatusBadRequest, errors.New(""))
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "corpo inválido"})
 		return
 	}
 
@@ -77,7 +77,7 @@ func (gc *GeneralController) UpdateUser(c *gin.Context) {
 	repo := repositories.NewUsersRepo(gc.Database)
 	err = repo.UpdateUserByID(id, user)
 	if err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err})
 		return
 	}
 
@@ -90,25 +90,25 @@ func (gc *GeneralController) UpdateUser(c *gin.Context) {
 func (gc *GeneralController) DeleteUser(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
 	idToken, _, err := utils.ExtractUserIdAndAccessLevel(c)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
 	if idToken != id {
-		c.AbortWithError(http.StatusUnauthorized, errors.New("o usuário pode buscar somente suas próprias informações"))
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "o usuário pode buscar somente suas próprias informações"})
 		return
 	}
 
 	repo := repositories.NewUsersRepo(gc.Database)
 	err = repo.DeleteUserByID(id)
 	if err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err})
 		return
 	}
 
