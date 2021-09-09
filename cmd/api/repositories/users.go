@@ -3,6 +3,7 @@ package repositories
 import (
 	"api/cmd/api/core/models"
 	"database/sql"
+	"time"
 )
 
 // Users representa um repositório de usuários
@@ -15,7 +16,7 @@ func NewUsersRepo(db *sql.DB) *Users {
 	return &Users{db}
 }
 
-// CreateUser cria um usuário no banco e retorna um token de autorização
+// CreateUser cria um usuário no banco
 func (u Users) CreateUser(user models.User) (uint64, error) {
 	stmt, err := u.db.Prepare(
 		"INSERT INTO users (name, email, password, accesslevel) values (?, ?, ?, ?)")
@@ -69,13 +70,13 @@ func (u Users) GetUserByEmail(email string) (models.User, error) {
 
 // UpdateUserByID atualiza um usuário no banco pelo ID fornecido
 func (u Users) UpdateUserByID(ID uint64, user models.User) error {
-	stmt, err := u.db.Prepare("UPDATE users SET nome = ?, email = ? where id = ?")
+	stmt, err := u.db.Prepare("UPDATE users SET nome = ?, email = ?, updated_at = ? where id = ?")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(user.Name, user.Email, ID)
+	_, err = stmt.Exec(user.Name, user.Email, time.Now().UTC(), ID)
 	if err != nil {
 		return err
 	}
