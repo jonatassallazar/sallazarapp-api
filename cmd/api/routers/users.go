@@ -13,5 +13,7 @@ func UsersRoutes(g *gin.RouterGroup, gc *controllers.GeneralController) {
 	{
 		usersRoutes.Use(middlewares.AuthorizeJWT)
 		usersRoutes.GET("/:id", gc.GetUser)
+		usersRoutes.PUT("/:id", gc.UpdateUser)
+		usersRoutes.DELETE("/:id", gc.DeleteUser)
 	}
 }
