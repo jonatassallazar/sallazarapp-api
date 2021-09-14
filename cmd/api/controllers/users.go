@@ -73,6 +73,11 @@ func (gc *GeneralController) UpdateUser(c *gin.Context) {
 
 	c.BindJSON(&user)
 
+	if err := user.Prepare("update"); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
 	repo := repositories.NewUsersRepo(gc.Database)
 	err = repo.UpdateUserByID(id, user)
 	if err != nil {

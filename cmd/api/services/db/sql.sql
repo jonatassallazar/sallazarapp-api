@@ -20,6 +20,9 @@ CREATE TABLE clients(
   phone varchar(10),
   gender varchar(15),
   birthday timestamp,
+  owner_id int,
+  FOREIGN KEY (owner_id) REFERENCES users(id)
+  ON DELETE CASCADE,
   updated_at timestamp default current_timestamp(),
   created_at timestamp default current_timestamp()
 ) ENGINE=INNODB;

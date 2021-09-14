@@ -74,7 +74,7 @@ func ExtractUserIdAndAccessLevel(c *gin.Context) (uint64, string, error) {
 	}
 
 	if permissions, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		userId, err := strconv.ParseUint(fmt.Sprintf("%.0f", permissions["userId"]), 10, 64)
+		userId, err := strconv.ParseUint(fmt.Sprintf("%.0f", permissions["userID"]), 10, 64)
 		if err != nil {
 			return 0, "", err
 		}

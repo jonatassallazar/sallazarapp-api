@@ -20,12 +20,10 @@ func (gc *GeneralController) UserSignup(c *gin.Context) {
 
 	c.BindJSON(&user)
 
-	hp, err := utils.SecurePassword(user.Password)
-	if err != nil {
+	if err := user.Prepare("create"); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
-	user.Password = hp
 
 	repo := repositories.NewUsersRepo(gc.Database)
 

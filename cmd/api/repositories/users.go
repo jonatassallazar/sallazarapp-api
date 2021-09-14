@@ -70,7 +70,7 @@ func (u Users) GetUserByEmail(email string) (models.User, error) {
 
 // UpdateUserByID atualiza um usuário no banco pelo ID fornecido
 func (u Users) UpdateUserByID(ID uint64, user models.User) error {
-	stmt, err := u.db.Prepare("UPDATE users SET nome = ?, email = ?, updated_at = ? where id = ?")
+	stmt, err := u.db.Prepare("UPDATE users SET name = ?, email = ?, updated_at = ? where id = ?")
 	if err != nil {
 		return err
 	}

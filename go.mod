@@ -3,6 +3,7 @@ module api
 go 1.17
 
 require (
+	github.com/badoux/checkmail v1.2.1 // indirect
 	github.com/cockroachdb/apd v1.1.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.7.4 // indirect
