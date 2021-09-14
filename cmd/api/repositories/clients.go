@@ -77,9 +77,9 @@ func (c Clients) GetClientByID(userID, clientID uint64) (models.Client, error) {
 	var client models.Client
 
 	if err := c.db.QueryRow(
-		"SELECT id, name, status, email, phone, gender, birthday, updated_at, created_at FROM clients WHERE owner_id = ? AND id = ?",
+		"SELECT id, name, status, email, phone, gender, birthday, owner_id, updated_at, created_at FROM clients WHERE owner_id = ? AND id = ?",
 		userID, clientID).Scan(&client.ID, &client.Name, &client.Status, &client.Email, &client.Phone, &client.Gender, &client.Birthday,
-		&client.UpdatedAt, &client.CreatedAt); err != nil {
+		&client.OwnerID, &client.UpdatedAt, &client.CreatedAt); err != nil {
 		return models.Client{}, err
 	}
 
