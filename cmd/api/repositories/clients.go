@@ -57,7 +57,7 @@ func (c Clients) GetClientsByUserID(userID uint64) ([]models.Client, error) {
 	var clients []models.Client
 
 	rows, err := c.db.Query(
-		"SELECT clients.id, clients.name, clients.status, clients.email, clients.phone, clients.gender, clients.birthday, clients.owner_id, clients.updated_at, clients.created_at, address.cep, address.number, address.complement, address.neighbourhood, address.city, address.state FROM clients WHERE owner_id = ? LEFT JOIN address ON clients.id = address.client_id", userID)
+		"SELECT clients.id, clients.name, clients.status, clients.email, clients.phone, clients.gender, clients.birthday, clients.owner_id, clients.updated_at, clients.created_at, address.cep, address.number, address.complement, address.neighbourhood, address.city, address.state FROM clients LEFT JOIN address ON clients.id=address.client_id WHERE clients.owner_id = ?", userID)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func (c Clients) GetClientByID(userID, clientID uint64) (models.Client, error) {
 	var client models.Client
 
 	if err := c.db.QueryRow(
-		"SELECT clients.id, clients.name, clients.status, clients.email, clients.phone, clients.gender, clients.birthday, clients.owner_id, clients.updated_at, clients.created_at, address.cep, address.number, address.complement, address.neighbourhood, address.city, address.state FROM clients WHERE owner_id = ? AND id = ? LEFT JOIN address ON clients.id = address.client_id",
+		"SELECT clients.id, clients.name, clients.status, clients.email, clients.phone, clients.gender, clients.birthday, clients.owner_id, clients.updated_at, clients.created_at, address.cep, address.number, address.complement, address.neighbourhood, address.city, address.state FROM clients LEFT JOIN address ON clients.id=address.client_id WHERE clients.owner_id = ? AND clients.id = ?",
 		userID, clientID).Scan(
 		&client.ID,
 		&client.Name,

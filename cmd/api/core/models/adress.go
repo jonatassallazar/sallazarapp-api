@@ -1,11 +1,11 @@
 package models
 
 type Address struct {
-	CEP           int    `json:"cep"`
-	Address       string `json:"address"`
-	Number        string `json:"number"`
-	Complement    string `json:"complement"`
-	Neighbourhood string `json:"neighbourhood"`
-	City          string `json:"city"`
-	State         string `json:"state"`
+	CEP           int    `json:"cep,omitempty"`
+	Address       string `json:"address,omitempty"`
+	Number        string `json:"number,omitempty"`
+	Complement    string `json:"complement,omitempty"`
+	Neighbourhood string `json:"neighbourhood,omitempty"`
+	City          string `json:"city,omitempty"`
+	State         string `json:"state,omitempty"`
 }
