@@ -57,7 +57,14 @@ func (c Clients) GetClientsByUserID(userID uint64) ([]models.Client, error) {
 	var clients []models.Client
 
 	rows, err := c.db.Query(
-		"SELECT clients.id, clients.name, clients.status, clients.email, clients.phone, clients.gender, clients.birthday, clients.owner_id, clients.updated_at, clients.created_at, address.cep, address.number, address.complement, address.neighbourhood, address.city, address.state FROM clients LEFT JOIN address ON clients.id=address.client_id WHERE clients.owner_id = ?", userID)
+		`SELECT clients.id, clients.name, clients.status, clients.email, clients.phone, clients.gender, 
+		clients.birthday, clients.owner_id, clients.updated_at, clients.created_at, address.id, address.cep, address.number, 
+		address.complement, address.neighbourhood, address.city, address.state 
+			FROM clients 
+			LEFT JOIN address 
+			ON clients.id = address.client_id 
+		WHERE clients.owner_id = ?`,
+		userID)
 	if err != nil {
 		return nil, err
 	}
@@ -76,6 +83,7 @@ func (c Clients) GetClientsByUserID(userID uint64) ([]models.Client, error) {
 			&client.OwnerID,
 			&client.UpdatedAt,
 			&client.CreatedAt,
+			&client.FullAddress.ID,
 			&client.FullAddress.CEP,
 			&client.FullAddress.Number,
 			&client.FullAddress.Complement,
@@ -122,9 +130,11 @@ func (c Clients) GetClientByID(userID, clientID uint64) (models.Client, error) {
 }
 
 // UpdateClientByID atualiza um cliente no banco pelo ID fornecido
-func (c Clients) UpdateClientByID(userID, clientID uint64, client models.Client) error {
+func (c Clients) UpdateClientByID(userID, clientID uint64, client models.ClientJSON) error {
 	stmtClient, err := c.db.Prepare(
-		"UPDATE clients SET name = ?,status = ?, email = ?, phone = ?, gender = ?, birthday = ?, updated_at = ? WHERE id = ? AND owner_id = ?")
+		`UPDATE clients 
+			SET name = ?, status = ?, email = ?, phone = ?, gender = ?, birthday = ?, updated_at = ? 
+		WHERE id = ? AND owner_id = ?`)
 	if err != nil {
 		return err
 	}
@@ -137,19 +147,26 @@ func (c Clients) UpdateClientByID(userID, clientID uint64, client models.Client)
 		return err
 	}
 
-	var address models.Address
-
 	stmtAddress, err := c.db.Prepare(
-		"UPDATE address SET cep = ?, number = ?, complement = ?, neighbourhood = ?, city = ?, state = ? WHERE client_id = ?")
+		`INSERT INTO address (id, cep, number, complement, neighbourhood, city, state, client_id)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		ON DUPLICATE KEY UPDATE cep = ?, number = ?, complement = ?, neighbourhood = ?, city = ?, state = ?`,
+	)
 	if err != nil {
 		return err
 	}
 	defer stmtAddress.Close()
 
-	_, err = stmtAddress.Exec(address.CEP, address.Number, address.Complement, address.Neighbourhood, address.City, address.State, clientID)
+	res, err := stmtAddress.Exec(
+		client.FullAddress.ID, client.FullAddress.CEP, client.FullAddress.Number, client.FullAddress.Complement,
+		client.FullAddress.Neighbourhood, client.FullAddress.City, client.FullAddress.State, clientID,
+		client.FullAddress.CEP, client.FullAddress.Number, client.FullAddress.Complement,
+		client.FullAddress.Neighbourhood, client.FullAddress.City, client.FullAddress.State)
 	if err != nil {
 		return err
 	}
+
+	res.RowsAffected()
 
 	return nil
 }
