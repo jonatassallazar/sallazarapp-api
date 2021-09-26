@@ -111,8 +111,14 @@ func (gc *GeneralController) GetOneClient(c *gin.Context) {
 		return
 	}
 
+	clientJSON, err := client.ClientToJSON()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"data": client,
+		"data": clientJSON,
 	})
 }
 
